@@ -1,10 +1,10 @@
-Here’s your refined README with the requested video link and opening screen:
+Here’s your updated README with a **special promotion icon** to highlight the pawn promotion visually:
 
 ---
 
-# 📋 **ChessLiteServerAPI: ASP.NET Chess Game Server**  
+# 📋 **ChessLiteServerAPI: ASP.NET Chess Game Server**
 
-Welcome to **ChessLiteServerAPI**, an advanced chess server built with **ASP.NET Core** to showcase technical mastery and modern web design. This project emphasizes the implementation of **chess logic for a custom game variant**, backend efficiency using **ADO.NET and Entity Framework**, and a responsive web experience.  
+Welcome to **ChessLiteServerAPI**, an advanced chess server built with **ASP.NET Core** to showcase technical mastery and modern web design. This project emphasizes the implementation of **chess logic for a custom game variant**, backend efficiency using **ADO.NET and Entity Framework**, and a responsive web experience.
 
 🎥 **Watch the Demo Video**:  
 [![ChessLiteServerAPI Demo](https://img.youtube.com/vi/BswtL1h7Pgo/0.jpg)](https://www.youtube.com/watch?v=BswtL1h7Pgo)  
@@ -103,7 +103,10 @@ This chess variant, called **"חצי שח"** (Half Chess), provides an exciting 
 
 - **Custom Icons for Actions**  
   - Unicode chess piece symbols: ♔ King, ♘ Knight, ♖ Rook, ♙ Pawn.  
-  - Special icons for **En passant**: ♙→♙ and **Castling**: ♖↔♔.  
+  - Special icons:
+    - **En passant**: ♙→♙  
+    - **Castling**: ♖↔♔  
+    - **Promotion**: promoted to ♖ *(Pawn promoted to King)*  
 
 ---
 
@@ -134,4 +137,4 @@ This project demonstrates technical prowess in **backend development, parallel p
 
 ---
 
-Let me know if you need further adjustments or additional content!
+This version includes the **promotion icon** to enhance clarity and visualization of the pawn promotion feature. Let me know if you need further adjustments!
