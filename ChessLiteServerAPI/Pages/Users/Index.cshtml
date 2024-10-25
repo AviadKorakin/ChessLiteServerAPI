@@ -1,0 +1,228 @@
+﻿@page
+@model ChessLiteServerAPI.Pages.Users.IndexModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1><i class="fas fa-users"></i> Users</h1>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Phone</th>
+                <th>Country</th>
+                <th>Games</th> <!-- Header for games -->
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.Phone</td>
+                    <td>@user.Country</td>
+                    <td>
+                        @if (user.Games != null && user.Games.Any())
+                        {
+                            <button class="btn btn-sm shiny-purple"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#gamesDropdown-@user.Id"
+                                    aria-expanded="false"
+                                    aria-controls="gamesDropdown-@user.Id">
+                                View Games
+                            </button>
+
+                            <div class="collapse mt-2 games-dropdown" id="gamesDropdown-@user.Id">
+                                <div class="scrollable-steps-container">
+                                    <ul class="list-group">
+                                        @foreach (var game in user.Games)
+                                        {
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>
+                                                    <i class="fas fa-chess-board me-2"></i>
+                                                    <strong>@game.GameId:</strong> @game.GameDate.ToString("d")
+                                                </span>
+                                                <button class="btn btn-delete-gradient btn-sm"
+                                                        onclick="confirmDelete('@user.Id', '@game.GameId')">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No games available</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@user.Id" class="btn btn-edit-gradient btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a> |
+                        <a asp-page="./Details" asp-route-id="@user.Id" class="btn btn-details-gradient btn-sm">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a> |
+                        <a asp-page="./Delete" asp-route-id="@user.Id" class="btn btn-delete-gradient btn-sm">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<!-- CSS for Buttons, Gradients, and Hover Effects -->
+<style>
+    /* Shiny Purple Button (View Games) */
+    .shiny-purple {
+        background: linear-gradient(45deg, #7b1fa2, #9c27b0);
+        border: none;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+        .shiny-purple:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2); /* Reverse gradient on hover */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Edit Button (Green Gradient) */
+    .btn-edit-gradient {
+        background: linear-gradient(45deg, #43a047, #66bb6a);
+        border: none;
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+        .btn-edit-gradient:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #66bb6a, #43a047); /* Reverse gradient */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Details Button (Silver Gradient) */
+    .btn-details-gradient {
+        background: linear-gradient(45deg, #c0c0c0, #d3d3d3);
+        border: none;
+        color: black;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+        .btn-details-gradient:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #d3d3d3, #c0c0c0); /* Reverse gradient */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Delete Button (Red Gradient) */
+    .btn-delete-gradient {
+        background: linear-gradient(45deg, #ff1744, #d50000);
+        border: none;
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+        .btn-delete-gradient:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #d50000, #ff1744); /* Reverse gradient */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Scrollable Container for Games */
+    .scrollable-steps-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    /* List Item Hover Effect */
+    .list-group-item:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    /* Ensure games dropdown stays within the table cell */
+    .games-dropdown {
+        position: absolute;
+        width: 100%;
+        z-index: 1050;
+    }
+
+    /* Table Cell Positioning */
+    td {
+        position: relative;
+    }
+</style>
+
+@section Scripts {
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach click listeners to all View Games buttons
+            document.querySelectorAll('.shiny-purple').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const targetId = button.getAttribute('data-bs-target'); // The target dropdown ID
+
+                    // Close all open dropdowns
+                    document.querySelectorAll('.games-dropdown.show').forEach(dropdown => {
+                        const collapseInstance = bootstrap.Collapse.getInstance(dropdown);
+                        if (collapseInstance) {
+                            collapseInstance.hide(); // Close each open dropdown
+                        }
+                    });
+
+                    // Open the selected dropdown
+                    const target = document.querySelector(targetId);
+                    const collapseInstance = bootstrap.Collapse.getOrCreateInstance(target);
+                    collapseInstance.toggle(); // Toggle the clicked dropdown
+                });
+            });
+        });
+    async function confirmDelete(userId, gameId) {
+        if (confirm("Are you sure you want to delete this game?")) {
+            try {
+                const response = await fetch(`/api/Users/${userId}/Games/${gameId}`, {
+                    method: 'DELETE'
+                });
+
+                // Check if the response has content (status 204 means No Content)
+                let data = {};
+                if (response.status !== 204) {
+                    data = await response.json(); // Parse JSON if available
+                }
+
+                if (response.ok) {
+                    const message = data.Message || "Game deleted successfully."; // Fallback message
+                    alert(message);
+                    location.reload(); // Reload page on success
+                } else {
+                    console.error("Failed to delete:", data); // Log error details
+                    alert(data.Message || "Failed to delete the game.");
+                }
+            } catch (error) {
+                console.error('Error occurred:', error); // Log unexpected errors
+                alert("An unexpected error occurred. Please try again.");
+            }
+        }
+    }
+</script>
+}
+
+}
+
+

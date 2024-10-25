@@ -1,0 +1,371 @@
+﻿@page
+@model ChessLiteServerAPI.Pages.Users.CreateModel
+
+@{
+    ViewData["Create"] = "Create";
+}
+
+<h1 class="text-center mt-5"><i class="fas fa-user-plus"></i> Create New User</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="post" class="shadow p-4 rounded" onsubmit="return validatePhoneNumber();">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Id Field -->
+            <div class="form-group mb-3">
+                <label asp-for="Users.Id" class="form-label"><i class="fas fa-id-badge"></i> User ID</label>
+                <input asp-for="Users.Id" class="form-control" />
+                <span asp-validation-for="Users.Id" class="text-danger"></span>
+            </div>
+
+            <!-- First Name Field -->
+            <div class="form-group mb-3">
+                <label asp-for="Users.FirstName" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                <input asp-for="Users.FirstName" class="form-control" />
+                <span asp-validation-for="Users.FirstName" class="text-danger"></span>
+            </div>
+
+            <!-- Phone Field -->
+            <div class="form-group mb-3">
+                <label asp-for="Users.Phone" class="form-label"><i class="fas fa-phone"></i> Phone</label>
+                <input asp-for="Users.Phone" class="form-control" id="phoneInput" />
+                <span asp-validation-for="Users.Phone" class="text-danger" id="phoneError"></span>
+            </div>
+
+            <!-- Country Field -->
+            <div class="form-group mb-3">
+                <label asp-for="Users.Country" class="form-label"><i class="fas fa-globe"></i> Country</label>
+                <select asp-for="Users.Country" class="form-control form-select" id="countryField">
+                    <option value="">Select a country...</option>
+                    @foreach (var country in Model.CountriesList)
+                    {
+                        <option value="@country">@country</option>
+                    }
+                </select>
+                <span asp-validation-for="Users.Country" class="text-danger"></span>
+            </div>
+
+            <!-- Buttons in one row -->
+            <div class="d-flex justify-content-between">
+                <!-- Create Button with Blueish Gradient -->
+                <button type="submit" class="btn btn-create-gradient btn-sm">
+                    <i class="fas fa-check-circle"></i> Create
+                </button>
+
+                <!-- Back to Home Page Button with Silverish Gradient -->
+                <a asp-page="../Index" class="btn btn-back-home-gradient btn-sm">
+                    <i class="fas fa-arrow-left"></i> Back to Home Page
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Blueish Gradient for Create Button */
+    .btn-create-gradient {
+        background: linear-gradient(45deg, #42a5f5, #1e88e5); /* Light to Dark Blue */
+        border: none;
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-create-gradient:hover {
+        transform: scale(1.05);
+        background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Reverse gradient */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Silverish Gradient for Back to Home Button */
+    .btn-back-home-gradient {
+        background: linear-gradient(45deg, #bdbdbd, #e0e0e0); /* Light to Dark Silver */
+        border: none;
+        color: black;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-back-home-gradient:hover {
+        transform: scale(1.05);
+        background: linear-gradient(45deg, #e0e0e0, #bdbdbd); /* Reverse gradient */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Scrollable Steps Container */
+    .scrollable-steps-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .list-group-item:hover {
+        background-color: #28a745; /* Bootstrap success green */
+        color: white;
+    }
+
+    .games-dropdown {
+        position: absolute;
+        width: 100%;
+        z-index: 1050;
+    }
+
+    td {
+        position: relative;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Restrict Phone field to only allow numbers
+        document.querySelector('input[name="Users.Phone"]').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, ''); // Allow only numbers (0-9)
+        });
+
+        // Restrict First Name field to only allow alphabetic characters
+        document.querySelector('input[name="Users.FirstName"]').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^a-zA-Z]/g, ''); // Allow only alphabetic characters (A-Z, a-z)
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1.9.19/bundle/libphonenumber-js.min.js"></script>
+
+    <script>
+        // Mapping of country names to country codes
+        const countryCodeMap = {
+            "Afghanistan": "AF",
+            "Albania": "AL",
+            "Algeria": "DZ",
+            "Andorra": "AD",
+            "Angola": "AO",
+            "Antigua and Barbuda": "AG",
+            "Argentina": "AR",
+            "Armenia": "AM",
+            "Australia": "AU",
+            "Austria": "AT",
+            "Azerbaijan": "AZ",
+            "Bahamas": "BS",
+            "Bahrain": "BH",
+            "Bangladesh": "BD",
+            "Barbados": "BB",
+            "Belarus": "BY",
+            "Belgium": "BE",
+            "Belize": "BZ",
+            "Benin": "BJ",
+            "Bhutan": "BT",
+            "Bolivia": "BO",
+            "Bosnia and Herzegovina": "BA",
+            "Botswana": "BW",
+            "Brazil": "BR",
+            "Brunei": "BN",
+            "Bulgaria": "BG",
+            "Burkina Faso": "BF",
+            "Burundi": "BI",
+            "Cabo Verde": "CV",
+            "Cambodia": "KH",
+            "Cameroon": "CM",
+            "Canada": "CA",
+            "Central African Republic": "CF",
+            "Chad": "TD",
+            "Chile": "CL",
+            "China": "CN",
+            "Colombia": "CO",
+            "Comoros": "KM",
+            "Congo (Congo-Brazzaville)": "CG",
+            "Costa Rica": "CR",
+            "Croatia": "HR",
+            "Cuba": "CU",
+            "Cyprus": "CY",
+            "Czechia (Czech Republic)": "CZ",
+            "Democratic Republic of the Congo": "CD",
+            "Denmark": "DK",
+            "Djibouti": "DJ",
+            "Dominica": "DM",
+            "Dominican Republic": "DO",
+            "Ecuador": "EC",
+            "Egypt": "EG",
+            "El Salvador": "SV",
+            "Equatorial Guinea": "GQ",
+            "Eritrea": "ER",
+            "Estonia": "EE",
+            "Eswatini (fmr. 'Swaziland')": "SZ",
+            "Ethiopia": "ET",
+            "Fiji": "FJ",
+            "Finland": "FI",
+            "France": "FR",
+            "Gabon": "GA",
+            "Gambia": "GM",
+            "Georgia": "GE",
+            "Germany": "DE",
+            "Ghana": "GH",
+            "Greece": "GR",
+            "Grenada": "GD",
+            "Guatemala": "GT",
+            "Guinea": "GN",
+            "Guinea-Bissau": "GW",
+            "Guyana": "GY",
+            "Haiti": "HT",
+            "Honduras": "HN",
+            "Hungary": "HU",
+            "Iceland": "IS",
+            "India": "IN",
+            "Indonesia": "ID",
+            "Iran": "IR",
+            "Iraq": "IQ",
+            "Ireland": "IE",
+            "Israel": "IL",
+            "Italy": "IT",
+            "Jamaica": "JM",
+            "Japan": "JP",
+            "Jordan": "JO",
+            "Kazakhstan": "KZ",
+            "Kenya": "KE",
+            "Kiribati": "KI",
+            "Kuwait": "KW",
+            "Kyrgyzstan": "KG",
+            "Laos": "LA",
+            "Latvia": "LV",
+            "Lebanon": "LB",
+            "Lesotho": "LS",
+            "Liberia": "LR",
+            "Libya": "LY",
+            "Liechtenstein": "LI",
+            "Lithuania": "LT",
+            "Luxembourg": "LU",
+            "Madagascar": "MG",
+            "Malawi": "MW",
+            "Malaysia": "MY",
+            "Maldives": "MV",
+            "Mali": "ML",
+            "Malta": "MT",
+            "Marshall Islands": "MH",
+            "Mauritania": "MR",
+            "Mauritius": "MU",
+            "Mexico": "MX",
+            "Micronesia": "FM",
+            "Moldova": "MD",
+            "Monaco": "MC",
+            "Mongolia": "MN",
+            "Montenegro": "ME",
+            "Morocco": "MA",
+            "Mozambique": "MZ",
+            "Myanmar (formerly Burma)": "MM",
+            "Namibia": "NA",
+            "Nauru": "NR",
+            "Nepal": "NP",
+            "Netherlands": "NL",
+            "New Zealand": "NZ",
+            "Nicaragua": "NI",
+            "Niger": "NE",
+            "Nigeria": "NG",
+            "North Korea": "KP",
+            "North Macedonia": "MK",
+            "Norway": "NO",
+            "Oman": "OM",
+            "Pakistan": "PK",
+            "Palau": "PW",
+            "Panama": "PA",
+            "Papua New Guinea": "PG",
+            "Paraguay": "PY",
+            "Peru": "PE",
+            "Philippines": "PH",
+            "Poland": "PL",
+            "Portugal": "PT",
+            "Qatar": "QA",
+            "Romania": "RO",
+            "Russia": "RU",
+            "Rwanda": "RW",
+            "Saint Kitts and Nevis": "KN",
+            "Saint Lucia": "LC",
+            "Saint Vincent and the Grenadines": "VC",
+            "Samoa": "WS",
+            "San Marino": "SM",
+            "Sao Tome and Principe": "ST",
+            "Saudi Arabia": "SA",
+            "Senegal": "SN",
+            "Serbia": "RS",
+            "Seychelles": "SC",
+            "Sierra Leone": "SL",
+            "Singapore": "SG",
+            "Slovakia": "SK",
+            "Slovenia": "SI",
+            "Solomon Islands": "SB",
+            "Somalia": "SO",
+            "South Africa": "ZA",
+            "South Korea": "KR",
+            "South Sudan": "SS",
+            "Spain": "ES",
+            "Sri Lanka": "LK",
+            "Sudan": "SD",
+            "Suriname": "SR",
+            "Sweden": "SE",
+            "Switzerland": "CH",
+            "Syria": "SY",
+            "Taiwan": "TW",
+            "Tajikistan": "TJ",
+            "Tanzania": "TZ",
+            "Thailand": "TH",
+            "Timor-Leste": "TL",
+            "Togo": "TG",
+            "Tonga": "TO",
+            "Trinidad and Tobago": "TT",
+            "Tunisia": "TN",
+            "Turkey": "TR",
+            "Turkmenistan": "TM",
+            "Tuvalu": "TV",
+            "Uganda": "UG",
+            "Ukraine": "UA",
+            "United Arab Emirates": "AE",
+            "United Kingdom": "GB",
+            "United States": "US",
+            "Uruguay": "UY",
+            "Uzbekistan": "UZ",
+            "Vanuatu": "VU",
+            "Vatican City": "VA",
+            "Venezuela": "VE",
+            "Vietnam": "VN",
+            "Yemen": "YE",
+            "Zambia": "ZM",
+            "Zimbabwe": "ZW"
+        };
+
+        function validatePhoneNumber() {
+            var phoneInput = document.getElementById('phoneInput').value;
+            var phoneError = document.getElementById('phoneError');
+            var selectedCountry = document.getElementById('countryField').value;
+
+            // Get the country code based on the selected country
+            var countryCode = countryCodeMap[selectedCountry];
+
+            // If no country code is found, skip phone number validation and allow form submission
+            if (!countryCode) {
+                phoneError.textContent = ''; // Clear any error message
+                return true; // Allow form submission
+            }
+
+            // Check if the phone number is 10 digits long
+            if (phoneInput.length !== 10) {
+                phoneError.textContent = 'Phone number must be exactly 10 digits.';
+                return false; // Prevent form submission
+            }
+
+            try {
+                // Parse the phone number using libphonenumber-js
+                var phoneNumber = libphonenumber.parsePhoneNumber(phoneInput, countryCode);
+                if (!phoneNumber.isValid()) {
+                    phoneError.textContent = 'Phone number is not valid for ' + selectedCountry;
+                    return false; // Prevent form submission
+                }
+                phoneError.textContent = ''; // Clear error if valid
+                return true; // Allow form submission
+            } catch (error) {
+                phoneError.textContent = 'Phone number is not valid for ' + selectedCountry;
+                return false; // Prevent form submission
+            }
+        }
+    </script>
+
+}

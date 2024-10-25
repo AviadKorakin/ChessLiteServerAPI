@@ -1,0 +1,386 @@
+/* Light mode (default) */
+:root {
+    --primary-color: #1b6ec2;
+    --text-color: #000;
+    --bg-color: #f8f9fa;
+    --navbar-bg: #ffffff;
+    --footer-bg: #f8f9fa;
+    --form-bg-light: #ffffff; /* Light form background */
+    --form-bg-dark: #343a40; /* Dark form background for dark mode */
+    --border-color: #e5e5e5;
+    --primary-color-dark: #165a9d; /* Darker version of primary color */
+    --list-group-bg: #ffffff; /* Default background for list groups */
+}
+
+/* Dark mode with a less dark, premium look */
+@media (prefers-color-scheme: dark) {
+
+    ::-webkit-scrollbar-track {
+        background: #3a3a3a; /* Dark mode track color */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #0077cc; /* Blue thumb for scrollbar */
+        border-radius: 5px;
+        border: 3px solid #3a3a3a; /* Dark border to match the track */
+    }
+
+    :root {
+        --primary-color: #0077cc;
+        --text-color: #fff;
+        --bg-color: #1e1e1e;
+        --navbar-bg: #4a4a4a;
+        --footer-bg: #3a3a3a;
+        --form-bg-light: #343a40; /* Form background in dark mode */
+        --border-color: #444;
+        --list-group-bg: #343a40; /* Dark mode background for list groups */
+    }
+
+    .navbar-theme {
+        background-color: var(--navbar-bg);
+    }
+
+    .footer {
+        background-color: var(--footer-bg);
+        color: var(--text-color);
+    }
+
+    .text-theme {
+        color: var(--text-color);
+    }
+
+    /* List group in dark mode */
+    .list-group-item {
+        background-color: var(--list-group-bg);
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+}
+/* Hover state for list group items */
+
+
+.list-group-item:hover {
+    background-color: #007bff; /* Blue background */
+    color: white;
+    border-color: var(--primary-color-dark);
+}
+
+/* Body background and text color */
+html {
+    height: 100%; /* Ensure the entire viewport height is used */
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    height: 100%; /* Ensure the entire viewport height is used */
+    margin: 0;
+    padding: 0;
+    display:flex;
+    flex-direction:column;
+}
+
+/* Navbar and footer */
+.navbar-theme {
+    background-color: var(--navbar-bg);
+}
+
+.text-theme {
+    color: var(--text-color);
+}
+
+.footer {
+    background-color: var(--footer-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff; /* Use white text for buttons */
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-color-dark);
+    }
+
+.btn-secondary {
+    background-color: #6c757d; /* Default secondary color */
+    color: #fff;
+}
+
+    .btn-secondary:hover {
+        background-color: #5a6268; /* Darken for hover */
+    }
+
+    .btn-secondary:active {
+        background-color: #545b62; /* Darken further when active */
+    }
+
+/* Form elements */
+.form-label {
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.form-control {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    transition: background-color 0.3s, color 0.3s;
+    max-width: 100%; /* Ensure form elements don't overflow */
+    box-sizing: border-box; /* Ensure padding and borders are included */
+}
+
+.form-select {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    transition: background-color 0.3s, color 0.3s;
+    max-width: 100%; /* Ensure select elements don't overflow */
+    box-sizing: border-box;
+}
+
+/* Table styling */
+.table {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .table th, .table td {
+        border-color: var(--border-color);
+    }
+
+/* Default row styling */
+.table-hover tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+    /* Change the background color of the row when hovering */
+    .table-hover tbody tr:hover {
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+    }
+
+        /* Ensure the buttons inside the row remain readable when hovered */
+        .table-hover tbody tr:hover a {
+            color: white; /* White color for links */
+        }
+
+/* Add margin to the bottom of form elements to ensure spacing */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Make sure the container handles large content */
+.container {
+    min-height: 0; /* Important for Flexbox to allow proper shrinking */
+    overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    min-width:100%;
+    max-height: 100vh; /* Adjust max-height to allow vertical scrolling without pushing footer */
+    box-sizing: border-box;
+}
+
+/* Form background and elements */
+form {
+    background-color: var(--form-bg-light);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    width: 100%; /* Make sure form takes full width */
+    max-width: 100%; /* Prevent form from overflowing container */
+    box-sizing: border-box; /* Include padding and borders */
+}
+
+/* Ensure table responsiveness */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scroll if table overflows */
+}
+
+/* Smooth transitions for all interactive elements */
+.btn, .form-control, .form-select, .list-group-item {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+    /* Disabled Button Styling */
+    .btn:disabled {
+        background-color: #d6d6d6;
+        color: #ffffff;
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    /* Disabled input styling */
+    .form-control:disabled, .form-select:disabled {
+        background-color: #e9ecef;
+        opacity: 1;
+    }
+
+    /* Focus state for form elements */
+    .form-control:focus, .form-select:focus {
+        border-color: #0077cc; /* Primary color */
+        box-shadow: 0 0 0 0.2rem rgba(0, 119, 204, 0.25); /* Lighter box-shadow */
+    }
+
+/* Light mode (default) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffffff; /* White background for scrollbar track in light mode */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #0077cc; /* Blue thumb for scrollbar */
+    border-radius: 5px;
+    border: 3px solid #ffffff; /* White border to match the track */
+}
+
+
+.card-body {
+    padding: 1rem;
+    text-align: center;
+    overflow: visible;
+    position: relative;
+}
+
+/* Hover effect for chess piece cards */
+.card {
+    background-color: #fff;
+    color: #000;
+    position: relative;
+    margin: 5px;
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
+    border-radius: 10px; /* Optional: Keep the look clean */
+    overflow: visible; /* Prevent content from spilling out */
+    position: relative;
+}
+
+
+/* Ensure the text is readable in dark mode */
+.card-title {
+    color: #000;
+    font-family: 'Srisakdi', cursive;
+    font-weight: 400;
+}
+
+.card-text {
+    color: #000;
+}
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    padding: 5px; /* Adjust padding */
+    margin-left: -3px;
+    margin-right: -3px;
+}
+/* Scoped row style for cards */
+.card-row {
+    overflow: visible; /* Allow cards to overflow */
+    position: relative; /* Ensure overflow works correctly */
+}
+
+/* Hover effect for cards */
+.card:hover {
+    transform: scale(1.1); /* Enlarge card slightly */
+    border: 2px solid #007bff;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Pop-out shadow */
+    z-index: 5; /* Bring to front on hover */
+    overflow: visible; /* Ensure content is fully visible */
+}
+
+/* Dark mode card styles */
+@media (prefers-color-scheme: dark) {
+    /* Hover effect for chess piece cards */
+    .card {
+        background-color: #2a2a2a;
+        color: #fff;
+        position: relative;
+        margin:5px;
+        transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
+        border-radius: 10px; /* Optional: Keep the look clean */
+        overflow: visible; /* Prevent content from spilling out */
+        position: relative;
+    }
+    /* Ensure the text is readable in dark mode */
+    .card-title {
+        color: #fff;
+        font-family: 'Srisakdi', cursive;
+        font-weight: 400;
+    }
+
+    .card-text {
+        color: #fff;
+    }
+    .card:hover {
+        transform: scale(1.1); /* Enlarge card slightly */
+        border: 2px solid #007bff;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Pop-out shadow */
+        z-index: 5; /* Bring to front on hover */
+        overflow: visible; /* Ensure content is fully visible */
+    }
+
+    /* Ensure icons stand out in dark mode */
+    .card i {
+        color: #fff;
+    }
+}
+.chess-icon {
+    color: gold; /* Gold color for the icon */
+    margin-right: 8px; /* Add some spacing between the icon and text */
+}
+
+/* Styling for "Chess" part */
+.chess-text {
+    color: #6019df;
+    font-family: 'Srisakdi', cursive;
+    font-weight: 700;
+    transition: transform 0.2s;
+    display: inline-block;
+    font-size: 5rem; /* Make it bigger */
+}
+
+
+    /* Hover effect */
+    .chess-text:hover
+    {
+        transform: scale(1.1); /* Pop-out effect on hover */
+    }
+
+/* Adjust for dark mode */
+@media (prefers-color-scheme: dark) {
+    .chess-text {
+        color: #f6c325;
+        font-family: 'Srisakdi', cursive;
+        font-weight: 700;
+        transition: transform 0.2s;
+        display: inline-block;
+        font-size: 5rem; /* Make it bigger */
+    }
+}
+
+.custom-title2 {
+    font-family: 'Srisakdi', cursive;
+    font-weight: 700;
+    color: #6019df;
+}
+
+@media (prefers-color-scheme: dark) {
+    .custom-title2 {
+        font-family: 'Srisakdi', cursive;
+        font-weight: 700;
+        color: #f6c325;
+    }
+}
+

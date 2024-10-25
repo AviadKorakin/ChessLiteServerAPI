@@ -1,0 +1,450 @@
+﻿@page
+@model ChessLiteServerAPI.Pages.ChessQuestion.IndexModel
+
+@{
+    ViewData["Title"] = "Chess Queries";
+    var orderedGames = Model.AllGames.ToList(); // Resolve games query to a list
+}
+
+<h1>Chess Game Queries</h1>
+
+<!-- Display all players -->
+<h2>All Players</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Phone</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.AllPlayers)
+            {
+                <tr>
+                    <td>@player.Id</td>
+                    <td>@player.FirstName</td>
+                    <td>@player.Phone</td>
+                    <td>@player.Country</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Display players with last game date -->
+<h2>Players with Last Game Date</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Last Game Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.PlayersWithLastGameDate)
+            {
+                <tr>
+                    <td>@player.Name</td>
+                    <td>@(player.LastGameDate.HasValue ? player.LastGameDate.Value.ToString("d") : "Never Played")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Display all games -->
+<h2>All Games</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Game ID</th>
+                <th>User ID</th>
+                <th>Game Date</th>
+                <th>Winner</th>
+                <th>Win Method</th>
+                <th>User Color</th> 
+                <th>Computer Color</th>
+                <th style="width: 30%;">Steps</th> <!-- Increased width for Steps -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var game in orderedGames)
+            {
+                <tr>
+                    <td>@game.GameId</td>
+                    <td>@game.UserId</td>
+                    <td>@game.GameDate.ToString("d")</td>
+                    <td>@(!string.IsNullOrEmpty(game.Winner) ? game.Winner : "Black")</td>
+                    <td>@(!string.IsNullOrEmpty(game.WinMethod) ? game.WinMethod : "Server lost connection to the player")</td>
+                    <td>@(game.UserColor ? "White" : "Black")</td>
+                    <td>@(game.ComputerColor ? "White" : "Black")</td>
+                    <td>
+                        @if (game.GameSteps != null && game.GameSteps.Any())
+                        {
+                            <!-- Shiny Red Button -->
+                            <button class="btn shiny-red btn-sm"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#stepsDropdown-@game.GameId"
+                                    aria-expanded="false"
+                                    aria-controls="stepsDropdown-@game.GameId">
+                                View Steps
+                            </button>
+
+                            <div class="collapse mt-2 steps-dropdown" id="stepsDropdown-@game.GameId">
+                                <div class="scrollable-steps-container">
+                                    @{
+                                        var stepsList = game.GameSteps.ToList(); // Convert ICollection to List
+                                    }
+                                    <ul class="list-group">
+                                        @for (int i = 0; i < stepsList.Count; i++)
+                                        {
+                                            var step = stepsList[i];
+                                            <li class="list-group-item">
+                                                <strong>@step.StepOrder:</strong>                      
+                                               
+                                                @(GetUnicodeSymbol(step.PieceType))
+                                                @if (i % 2 == 0)
+                                                {
+                                                    <span>White</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Black</span>
+                                                }
+                                                @step.PieceType
+                                                from @step.FromPosition to @step.ToPosition
+
+                                                @if (!string.IsNullOrEmpty(step.Promotion))
+                                                {
+                                                    <span> (Promoted to @(GetUnicodeSymbol(step.Promotion)))</span>
+                                                }
+
+                                                <!-- EnPassant or Castling Messages with Icons -->
+                                                @if (step.EnPassant)
+                                                {
+                                                    <span> (&#x2659;&#x2192;&#x2659; En Passant)</span>
+                                                }
+                                                @if (step.Castling)
+                                                {
+                                                    <span> (♖↔♔ Castling)</span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No steps available for this game.</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Display first player from each country -->
+<h2>First Player from Each Country</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>First Player</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.FirstPlayersByCountry)
+            {
+                <tr>
+                    <td>@player.Country</td>
+                    <td>@player?.FirstPlayer?.FirstName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<h2>Select a Player</h2>
+<form id="playerForm">
+    <select id="playerSelect" name="selectedPlayer" class="form-control" onchange="fetchPlayerGames();">
+        <option value="">-- Select Player --</option>
+        @foreach (var playerName in Model.DistinctPlayerNames)
+        {
+            <option value="@playerName">@playerName</option>
+        }
+    </select>
+</form>
+
+
+
+<!-- Container for displaying the games -->
+<div id="gamesContainer" class="mt-3"></div>
+
+
+<!-- Display player game counts -->
+<h2>Player Game Counts</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Game Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.PlayerGameCounts)
+            {
+                <tr>
+                    <td>@player.PlayerName</td>
+                    <td>@player.GameCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Display players ordered by game counts -->
+<h2>Players Ordered by Game Counts</h2>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Game Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.PlayersOrderedByGames)
+            {
+                <tr>
+                    <td>@player.Name</td>
+                    <td>@player.GameCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<!-- Display players grouped by game count -->
+<h2>Players Grouped by Game Count</h2>
+<div class="table-responsive">
+    @foreach (var group in Model.PlayersByGameCount)
+    {
+        <h3>@group.Key Games</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Phone</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var player in group)
+                {
+                    <tr>
+                        <td>@player.Id</td>
+                        <td>@player.FirstName</td>
+                        <td>@player.Phone</td>
+                        <td>@player.Country</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    }
+</div>
+
+<!-- Display players grouped by country -->
+<h2>Players Grouped by Country</h2>
+<div class="table-responsive">
+    @foreach (var group in Model.PlayersByCountry)
+    {
+        <h3>@group.Key</h3> <!-- Country Name -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var player in group)
+                {
+                    <tr>
+                        <td>@player.Id</td>
+                        <td>@player.FirstName</td>
+                        <td>@player.Phone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<!-- CSS for Scrollable Steps Container and Shiny Red Button -->
+<style>
+
+     .table thead th,
+    .table tbody td {
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .scrollable-steps-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .list-group-item:hover {
+        background-color: #28a745; /* Success green */
+        color: white;
+    }
+
+    .steps-dropdown {
+        width: 100%; /* Ensure it stays within the column */
+        z-index: 1050; /* Keep it above other elements */
+    }
+
+    td {
+        position: relative; /* Anchor dropdown to table cell */
+    }
+
+    .shiny-red {
+        background: linear-gradient(45deg, #ff1744, #d50000); /* Red gradient */
+        border: none;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .shiny-red:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    h3 {
+        margin-top: 20px;
+        color: #ff1744
+    }
+</style>
+
+@functions {
+    public string GetUnicodeSymbol(string pieceType)
+    {
+        return pieceType.ToLower() switch
+        {
+            "king" => "♔",
+            "queen" => "♕",
+            "rook" => "♖",
+            "bishop" => "♗",
+            "knight" => "♘",
+            "pawn" => "♙",
+            _ => pieceType
+        };
+    }
+
+}
+<!-- Container to display games dynamically -->
+<div id="gamesContainer" class="mt-4"></div>
+
+@section Scripts {
+    <script>
+        // Function to fetch games via AJAX based on the selected player
+        async function fetchPlayerGames() {
+            // Get the selected player's name from the dropdown
+            const selectedPlayer = document.getElementById('playerSelect').value;
+
+            // Check if a player is selected
+            if (selectedPlayer) {
+                try {
+                    // Send an AJAX GET request to the backend with the selected player's name
+                    const response = await fetch(`/api/games?player=${encodeURIComponent(selectedPlayer)}`);
+
+                    // Parse the JSON data returned by the server
+                    const data = await response.json();
+
+                    // Check if the response status is OK (200)
+                    if (response.ok) {
+                        // If successful, call the displayGames function to render the games
+                        displayGames(data);
+                    } else {
+                        // If no games are found, display an appropriate message in the gamesContainer div
+                        document.getElementById('gamesContainer').innerHTML =
+                            `<p>No games found for the selected player.</p>`;
+                    }
+                } catch (error) {
+                    // If an error occurs during the request, log it and show an error message
+                    console.error('Error fetching games:', error);
+                    document.getElementById('gamesContainer').innerHTML =
+                        `<p>An error occurred while fetching games.</p>`;
+                }
+            } else {
+                // If no player is selected, clear the gamesContainer content
+                document.getElementById('gamesContainer').innerHTML = '';
+            }
+        }
+
+        // Function to dynamically display the fetched games in a table format
+        function displayGames(games) {
+            // Check if the games array is empty
+            if (!games.length) {
+                document.getElementById('gamesContainer').innerHTML = `<p>No games found.</p>`;
+                return;
+            }
+
+            // Start building the HTML content for the table
+            let html = `
+                <h3>Games Played by ${document.getElementById('playerSelect').value}</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Game ID</th>
+                                <th>Game Date</th>
+                                <th>Winner</th>
+                                <th>User Color</th>  <!-- New column -->
+                                <th>Computer Color</th>  <!-- New column -->
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Loop through the games and create a row for each game
+            games.forEach(game => {
+                html += `
+                    <tr>
+                        <td>${game.gameId}</td>  <!-- Display Game ID -->
+                        <td>${new Date(game.gameDate).toLocaleDateString()}</td>  <!-- Display Game Date -->
+                        <td>${game.winner}</td>  <!-- Display Winner -->
+                        <td>${game.userColor}</td>  <!-- Display User Color -->
+                        <td>${game.computerColor}</td>  <!-- Display Computer Color -->
+                    </tr>
+                `;
+            });
+
+            // Close the HTML structure for the table
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // Insert the generated HTML into the gamesContainer div
+            document.getElementById('gamesContainer').innerHTML = html;
+        }
+    </script>
+}

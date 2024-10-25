@@ -1,0 +1,72 @@
+﻿@page
+@model ChessLiteServerAPI.Pages.Users.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="text-center"><i class="fas fa-info-circle"></i> User Details</h1>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4"><i class="fas fa-id-badge"></i> User ID</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Users.Id)</dd>
+            <dt class="col-sm-4"><i class="fas fa-user"></i> First Name</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Users.FirstName)</dd>
+            <dt class="col-sm-4"><i class="fas fa-phone"></i> Phone</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Users.Phone)</dd>
+            <dt class="col-sm-4"><i class="fas fa-globe"></i> Country</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Users.Country)</dd>
+        </dl>
+        <!-- Buttons in one row -->
+        <div class="d-flex" style="gap: 10px;">
+            <!-- Edit Button with Greenish Gradient -->
+            <a asp-page="./Edit" asp-route-id="@Model.Users.Id" class="btn btn-edit-gradient btn-sm">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+
+            <!-- Return to Users Button with Silverish Gradient -->
+            <a asp-page="./Index" class="btn btn-back-home-gradient btn-sm">
+                <i class="fas fa-arrow-left"></i> Return to Users
+            </a>
+        </div>
+
+    </div>
+</div>
+<style>
+    /* Greenish Gradient for Edit Button */
+    .btn-edit-gradient {
+        background: linear-gradient(45deg, #43a047, #66bb6a); /* Light to Dark Green */
+        border: none;
+        color: white;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-edit-gradient:hover {
+        transform: scale(1.05);
+        background: linear-gradient(45deg, #66bb6a, #43a047); /* Reverse gradient */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Silverish Gradient for Return to Users Button */
+    .btn-back-home-gradient {
+        background: linear-gradient(45deg, #bdbdbd, #e0e0e0); /* Light to Dark Silver */
+        border: none;
+        color: black;
+        font-weight: bold;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-back-home-gradient:hover {
+        transform: scale(1.05);
+        background: linear-gradient(45deg, #e0e0e0, #bdbdbd); /* Reverse gradient */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Centering content */
+    .text-center {
+        margin-top: 20px;
+    }
+</style>

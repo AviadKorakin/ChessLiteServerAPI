@@ -1,0 +1,154 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4" style="font-size: 3rem; font-weight: bold;">
+        <span class="chess-text">ChessLite</span>
+    </h1>
+    <p class="lead">A fresh take on the classic game of chess.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3 class="text-primary"><i class="fas fa-chess"></i> Game Overview</h3>
+        <p>ChessLite is a unique variant of chess played on an 8x4 board with the classic chess rules, plus some exciting new twists:</p>
+        <ul class="list-group list-group-premium">
+            <li class="list-group-item"><i class="fas fa-exchange-alt"></i> Pawns can move horizontally one space but cannot capture this way.</li>
+            <li class="list-group-item"><i class="fas fa-hourglass-half"></i> Each player has a limited time for each move; running out of time results in a loss.</li>
+            <li class="list-group-item"><i class="fas fa-chess-king"></i> Win by checkmating the opponent's king or forcing a timeout.</li>
+        </ul>
+    </div>
+
+    <div class="col-md-6">
+        <h3 class="text-primary"><i class="fas fa-tools"></i> Key Features</h3>
+        <ul class="list-group list-group-premium">
+            <li class="list-group-item"><i class="fas fa-sync"></i> Real-time gameplay against our server.</li>
+            <li class="list-group-item"><i class="fas fa-database"></i> Game state saved for future reference and review.</li>
+            <li class="list-group-item"><i class="fas fa-clock"></i> Adjustable time limits per move (default is 20 seconds).</li>
+        </ul>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        <h3 class="text-primary"><i class="fas fa-chess-board"></i> How to Play</h3>
+        <p>To start a game, register an account and join a match. Choose your move time limit, and start the game on a half-size chessboard!</p>
+        <p>The goal remains the same: checkmate your opponent's king. But with ChessLite's twists, strategic planning becomes even more important.</p>
+        <a href="@Url.Page("/Users/Create")"
+           class="btn btn-lg shiny-green mt-3">
+            Get Started
+        </a>
+    </div>
+</div>
+
+<!-- Explanation of Chess Pieces with Icons -->
+<div class="container-fluid mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h3 class="text-primary"><i class="fas fa-chess-piece"></i> Chess Pieces Explained</h3>
+    </div>
+    <div class="card-grid">
+        <!-- Pawn -->
+        <div class="card-item">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chess-pawn fa-3x"></i>
+                    <h5 class="card-title mt-2">Pawn</h5>
+                    <p class="card-text">Moves one space forward,<br> captures diagonally, and can move horizontally one space but cannot capture horizontally. Can be promoted to any piece.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Rook -->
+        <div class="card-item">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chess-rook fa-3x"></i>
+                    <h5 class="card-title mt-2">Rook</h5>
+                    <p class="card-text">Moves horizontally and vertically any number of spaces.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Knight -->
+        <div class="card-item">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chess-knight fa-3x"></i>
+                    <h5 class="card-title mt-2">Knight</h5>
+                    <p class="card-text">Moves in an 'L' shape and jumps over other pieces.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Bishop -->
+        <div class="card-item">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chess-bishop fa-3x"></i>
+                    <h5 class="card-title mt-2">Bishop</h5>
+                    <p class="card-text">Moves diagonally any number of spaces.</p>
+                </div>
+            </div>
+        </div>
+        <!-- King -->
+        <div class="card-item">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chess-king fa-3x"></i>
+                    <h5 class="card-title mt-2">King</h5>
+                    <p class="card-text">Moves one space in any direction. The game ends if the king is checkmated.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Footer -->
+<footer class="text-center mt-auto py-3 border-top">
+    <div class="container">
+        <span class="text-muted">&copy; 2024 - ChessLiteServerAPI</span>
+    </div>
+</footer>
+<style>
+    .shiny-green {
+        background: linear-gradient(45deg, #28a745, #218838); /* Green gradient */
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        font-size: 1.25rem; /* Adjust font size for larger buttons */
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-align: center;
+    }
+
+        .shiny-green:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #218838, #1e7e34); /* Darker green on hover */
+        }
+
+    /* Apply hover effect to list group items */
+    .list-group-item {
+        transition: transform 0.2s, box-shadow 0.2s;
+
+
+    }
+        /* Hover effect for each row */
+        .list-group-item:hover {
+            transform: scale(1.05); /* Enlarge the row */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Pop-out shadow effect */
+            z-index: 1; /* Make sure it stays on top of other elements */
+        }
+    /* Prevent the parent container from overflowing */
+    .row{
+        overflow: hidden;
+
+    }
+
+    
+</style>
