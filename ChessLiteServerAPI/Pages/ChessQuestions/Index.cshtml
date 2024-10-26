@@ -118,7 +118,9 @@
                                                     <span>Black</span>
                                                 }
                                                 @step.PieceType
-                                                from @step.FromPosition to @step.ToPosition
+                                                <strong>@ConvertPosition(step.FromPosition)</strong>
+                                                to <strong>@ConvertPosition(step.ToPosition)</strong>
+
 
                                                 @if (!string.IsNullOrEmpty(step.Promotion))
                                                 {
@@ -361,6 +363,37 @@
 <!-- Container to display games dynamically -->
 <div id="gamesContainer" class="mt-4"></div>
 
+@functions
+{
+    private string ConvertPosition(string position)
+    {
+        // Remove parentheses and split the input string by the comma
+        var parts = position.Trim('(', ')').Split(',');
+
+        // Ensure the parts are correctly parsed into integers
+        if (parts.Length != 2 ||
+            !int.TryParse(parts[0], out int row) ||
+            !int.TryParse(parts[1], out int col))
+        {
+            throw new ArgumentException("Invalid position format. Expected format: (row,col).");
+        }
+
+        // Ensure the values are within the valid chessboard range (0-7)
+        if (row < 0 || row > 7 || col < 0 || col > 7)
+        {
+            throw new ArgumentOutOfRangeException("Row and column values must be between 0 and 7.");
+        }
+
+        // Convert column to a letter ('a' to 'h')
+        char column = (char)('a' + col);
+
+        // Convert row to 1-based index (1 to 8)
+        int adjustedRow = 8-row;
+
+        // Return the chess notation (e.g., "a1")
+        return $"{column}{adjustedRow}";
+    }
+}
 @section Scripts {
     <script>
         // Function to fetch games via AJAX based on the selected player

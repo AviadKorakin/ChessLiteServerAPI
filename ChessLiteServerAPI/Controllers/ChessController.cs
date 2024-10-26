@@ -129,6 +129,173 @@ namespace ChessLiteServerAPI.Controllers
                 return StatusCode(500, MoveResponse.ErrorResponse($"Internal server error: {ex.Message}"));
             }
         }
+
+        // POST: api/chess/move
+        [HttpPost("move-store")]
+        public ActionResult<MoveResponse> GetRandomLegalMoveAndSave([FromBody] CombinedMoveRequest comboinedMove)
+        {
+            if (comboinedMove.Board == null)
+            {
+                return BadRequest("Invalid input: Chessboard data is required.");
+            }
+
+
+            try
+            {
+                var allValidMoves = new List<((int Row, int Col) From, (int Row, int Col) To, ChessPiece Piece)>();
+
+                // Collect all valid moves for the current player's pieces
+                for (int row = 0; row < comboinedMove.Board.Board.Length; row++)
+                {
+                    for (int col = 0; col < comboinedMove.Board.Board[row].Length; col++)
+                    {
+                        var piece = comboinedMove.Board.Board[row][col];
+
+                        if (piece != null && piece.Color == comboinedMove.Board.CurrentTurn)
+                        {
+                            var moves = piece.Range((row, col), comboinedMove.Board.Board);
+
+                            // Add each valid move to the list along with its originating piece
+                            foreach (var move in moves)
+                            {
+                                allValidMoves.Add(((row, col), move, piece));
+                            }
+                        }
+                    }
+                }
+
+                // Shuffle the collected moves
+                allValidMoves = allValidMoves.OrderBy(_ => Random.Next()).ToList();
+
+                // Iterate through the shuffled moves and attempt to make them
+                foreach (var (from, to, piece) in allValidMoves)
+                {
+                    try
+                    {
+                        bool success = comboinedMove.Board.MovePiece(from, to);
+
+                        if (success)
+                        {
+                            comboinedMove.StepOrder++;
+                            // Log the move made to the console
+                            Console.WriteLine($"Move made: {piece.Type} from ({from.Row}, {from.Col}) to ({to.Row}, {to.Col})");
+                            var task = Task.Run(() =>
+                            {
+                                _gameRecordService.SaveStep(
+                                                        comboinedMove.GameId,
+                                                             from, to,
+                                                        comboinedMove.StepOrder,
+                                                            piece.Type,
+                                                                null,
+                                                                false,
+                                                                false
+                                                        );
+                            });
+                            // Register the task in the TaskManager
+                            _taskManager.AddTask(task);
+
+                            return Ok(MoveResponse.ValidMove(from, to));
+                        }
+                    }
+                    catch (PawnException)
+                    {
+                        comboinedMove.StepOrder++;
+                        string promotion = Promotions[Random.Next(Promotions.Length)];
+                        var task = Task.Run(() =>
+                        {
+                            _gameRecordService.SaveStep(
+                                                    comboinedMove.GameId,
+                                                         from, to,
+                                                    comboinedMove.StepOrder,
+                                                        piece.Type,
+                                                            promotion,
+                                                            false,
+                                                            false
+                                                    );
+                        });
+                        // Register the task in the TaskManager
+                        _taskManager.AddTask(task);
+                        return Ok(MoveResponse.PawnPromotion(from, to, promotion));
+                    }
+                    catch (IlegalMoveException)
+                    {
+                        Console.WriteLine($"Illegal move attempted: ({from.Row}, {from.Col}) -> ({to.Row}, {to.Col})");
+                        continue; // Continue to the next move
+                    }
+                    catch (CheckmateException)
+                    {
+
+                        // Log the move made to the console
+                        Console.WriteLine("Checkmate");
+                        return Ok(MoveResponse.ValidMove(from, to));
+                    }
+                    catch (CastlingException)
+                    {
+                        comboinedMove.StepOrder++;
+                        // Log the move made to the console
+                        Console.WriteLine("Castling!");
+                        var task = Task.Run(() =>
+                        {
+                            _gameRecordService.SaveStep(
+                                                    comboinedMove.GameId,
+                                                         from, to,
+                                                    comboinedMove.StepOrder,
+                                                        piece.Type,
+                                                            null,
+                                                            false,
+                                                            true
+                                                    );
+                        });
+                        // Register the task in the TaskManager
+                        _taskManager.AddTask(task);
+                        return Ok(MoveResponse.ValidMove(from, to));
+                    }
+                    catch (EnpassantException)
+                    {
+                        comboinedMove.StepOrder++;
+                        Console.WriteLine($"Move made: {piece.Type} from ({from.Row}, {from.Col}) to ({to.Row}, {to.Col})");
+                        // Log the move made to the console
+                        Console.WriteLine("En-passant");
+                        var task = Task.Run(() =>
+                        {
+                            _gameRecordService.SaveStep(
+                                                    comboinedMove.GameId,
+                                                         from, to,
+                                                    comboinedMove.StepOrder,
+                                                        piece.Type,
+                                                            null,
+                                                            true,
+                                                            false
+                                                    );
+                        });
+                        // Register the task in the TaskManager
+                        _taskManager.AddTask(task);
+                        return Ok(MoveResponse.ValidMove(from, to));
+                    }
+                    catch (TieException)
+                    {
+                        // Log the move made to the console
+                        Console.WriteLine("Tie");
+                        return Ok(MoveResponse.ValidMove(from, to));
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Handle InvalidOperationException specifically
+                        return BadRequest("Invalid move attempted due to game state restrictions.");
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, MoveResponse.ErrorResponse($"Unexpected error: {ex.Message}"));
+                    }
+                }
+
+                return BadRequest(MoveResponse.ErrorResponse("No legal moves available."));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, MoveResponse.ErrorResponse($"Internal server error: {ex.Message}"));
+            }
+        }
         // POST: api/chess/move
         [HttpPost("smart-move")]
         public ActionResult<MoveResponse> GetRandomSmartLegalMove([FromBody] Chessboard board)
