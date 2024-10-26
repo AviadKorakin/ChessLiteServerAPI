@@ -118,24 +118,26 @@
                                                     <span>Black</span>
                                                 }
                                                 @step.PieceType
-                                                <strong>@ConvertPosition(step.FromPosition)</strong>
-                                                to <strong>@ConvertPosition(step.ToPosition)</strong>
+                                                <span>@ConvertPosition(step.FromPosition)</span>
+                                                <strong>⟶</strong>
+                                                   <span> @ConvertPosition(step.ToPosition)</span>
 
 
                                                 @if (!string.IsNullOrEmpty(step.Promotion))
                                                 {
-                                                    <span> (Promoted to @(GetUnicodeSymbol(step.Promotion)))</span>
+                                                    <span class ="badge bg-success ms-2"> Promoted to @(GetUnicodeSymbol(step.Promotion))</span>
                                                 }
 
                                                 <!-- EnPassant or Castling Messages with Icons -->
                                                 @if (step.EnPassant)
                                                 {
-                                                    <span> (&#x2659;&#x2192;&#x2659; En Passant)</span>
+                                                    <spann class="badge badge-enpassant ms-2"> &#x2659;&#x2192;&#x2659; En Passant</spann>
                                                 }
                                                 @if (step.Castling)
                                                 {
-                                                    <span> (♖↔♔ Castling)</span>
+                                                    <span class="badge badge-castling ms-2" > ♖↔♔ Castling</span>
                                                 }
+
                                             </li>
                                         }
                                     </ul>
@@ -296,7 +298,13 @@
 
 <!-- CSS for Scrollable Steps Container and Shiny Red Button -->
 <style>
+    .badge-enpassant {
+        background-color: #2196F3; /* Blue for En Passant */
+    }
 
+    .badge-castling {
+        background-color: #A52A2A; /* Brown for Castling */
+    }
      .table thead th,
     .table tbody td {
         text-align: left;
