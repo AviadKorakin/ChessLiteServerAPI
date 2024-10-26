@@ -106,7 +106,7 @@ This chess variant, called **"חצי שח"** (Half Chess), provides an exciting 
   - Special icons:
     - **En passant**: ♙→♙  
     - **Castling**: ♖↔♔  
-    - **Promotion**: promoted to ♖ *(Pawn promoted to King)*  
+    - **Promotion**: promoted to ♖ *(Pawn promoted to Rook)*  
 
 ---
 
