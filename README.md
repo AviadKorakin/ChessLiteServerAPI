@@ -1,7 +1,3 @@
-Here’s your updated README with a **special promotion icon** to highlight the pawn promotion visually:
-
----
-
 # 📋 **ChessLiteServerAPI: ASP.NET Chess Game Server**
 
 Welcome to **ChessLiteServerAPI**, an advanced chess server built with **ASP.NET Core** to showcase technical mastery and modern web design. This project emphasizes the implementation of **chess logic for a custom game variant**, backend efficiency using **ADO.NET and Entity Framework**, and a responsive web experience.
